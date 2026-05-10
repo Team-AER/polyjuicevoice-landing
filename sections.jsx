@@ -23,44 +23,102 @@ const Arrow = ({ size = 14 }) => (
   </svg>
 );
 
+// =================== Responsive Hook ===================
+function useBreakpoint() {
+  const [w, setW] = React.useState(() => window.innerWidth);
+  React.useEffect(() => {
+    const h = () => setW(window.innerWidth);
+    window.addEventListener('resize', h);
+    return () => window.removeEventListener('resize', h);
+  }, []);
+  return { isMobile: w < 768, isTablet: w < 1024, width: w };
+}
+
 // =================== Top Nav ===================
 function TopNav({ accent }) {
+  const [open, setOpen] = React.useState(false);
+  const { isMobile } = useBreakpoint();
   return (
     <header style={{ position: 'sticky', top: 0, zIndex: 50, backdropFilter: 'blur(12px)', background: 'rgba(8,8,10,0.72)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '14px 32px', display: 'flex', alignItems: 'center', gap: 32 }}>
-        <a href="#" style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#fff', textDecoration: 'none' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: isMobile ? '12px 20px' : '14px 32px', display: 'flex', alignItems: 'center', gap: isMobile ? 0 : 32 }}>
+        <a href="#" style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#fff', textDecoration: 'none', flexShrink: 0 }}>
           <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
             <rect x="0.5" y="0.5" width="21" height="21" rx="4" stroke="#fff" />
             {/* mirrored speech wave glyph */}
             <path d="M5 11 L7 11 L7 8 L9 8 L9 14 L11 14 L11 5 L13 5 L13 17 L15 17 L15 9 L17 9" stroke={accent} strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           <span style={{ fontFamily: 'Geist, ui-sans-serif, system-ui', fontWeight: 600, fontSize: 15, letterSpacing: '-0.01em' }}>PolyJuiceVoice</span>
-          <Mono dim style={{ marginLeft: 6 }}>v0.3 · BETA</Mono>
+          {!isMobile && <Mono dim style={{ marginLeft: 6 }}>v0.3 · BETA</Mono>}
         </a>
-        <nav style={{ display: 'flex', gap: 24, marginLeft: 'auto' }}>
-          {['Speak', 'Voices', 'Models', 'Docs'].map((n) => (
-            <a key={n} href="#" style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>{n}</a>
-          ))}
-        </nav>
-        <a href="https://github.com/Team-AER/PolyJuiceVoice" style={{ fontFamily: 'ui-monospace, monospace', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
-          GITHUB <Arrow size={12} />
-        </a>
-        <button style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 13, fontWeight: 500, color: '#000', background: '#fff', border: 'none', borderRadius: 4, padding: '8px 14px', cursor: 'pointer' }}>
-          Download for macOS
-        </button>
+
+        {!isMobile && (
+          <nav style={{ display: 'flex', gap: 24, marginLeft: 'auto' }}>
+            {['Speak', 'Voices', 'Models', 'Docs'].map((n) => (
+              <a key={n} href="#" style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>{n}</a>
+            ))}
+          </nav>
+        )}
+        {!isMobile && (
+          <React.Fragment>
+            <a href="https://github.com/Team-AER/PolyJuiceVoice" style={{ fontFamily: 'ui-monospace, monospace', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
+              GITHUB <Arrow size={12} />
+            </a>
+            <button style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 13, fontWeight: 500, color: '#000', background: '#fff', border: 'none', borderRadius: 4, padding: '8px 14px', cursor: 'pointer' }}>
+              Download for macOS
+            </button>
+          </React.Fragment>
+        )}
+
+        {isMobile && (
+          <button
+            onClick={() => setOpen((o) => !o)}
+            aria-label="Toggle menu"
+            style={{ marginLeft: 'auto', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            {open ? (
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <line x1="5" y1="5" x2="15" y2="15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1="15" y1="5" x2="5" y2="15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <line x1="4" y1="6" x2="16" y2="6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1="4" y1="10" x2="16" y2="10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                <line x1="4" y1="14" x2="16" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            )}
+          </button>
+        )}
       </div>
+
+      {isMobile && open && (
+        <nav style={{ background: 'rgba(8,8,10,0.98)', backdropFilter: 'blur(16px)', borderTop: '1px solid rgba(255,255,255,0.04)', padding: '8px 20px 16px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {['Speak', 'Voices', 'Models', 'Docs'].map((n) => (
+            <a key={n} href="#" style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 15, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', padding: '10px 8px', display: 'block', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{n}</a>
+          ))}
+          <a href="https://github.com/Team-AER/PolyJuiceVoice" style={{ fontFamily: 'ui-monospace, monospace', fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6, padding: '10px 8px' }}>
+            GITHUB <Arrow size={12} />
+          </a>
+          <div style={{ paddingTop: 8 }}>
+            <button style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 14, fontWeight: 500, color: '#000', background: '#fff', border: 'none', borderRadius: 4, padding: '10px 14px', cursor: 'pointer', width: '100%' }}>
+              Download for macOS
+            </button>
+          </div>
+        </nav>
+      )}
     </header>
   );
 }
 
 // =================== Hero ===================
 function Hero({ accent }) {
+  const { isMobile } = useBreakpoint();
   return (
     <section style={{ position: 'relative', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-      <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.4fr', minHeight: 620 }}>
-        <div style={{ padding: '88px 56px 56px', borderRight: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1.4fr', minHeight: isMobile ? 'auto' : 620 }}>
+        <div style={{ padding: isMobile ? '48px 24px 44px' : '88px 56px 56px', borderRight: isMobile ? 'none' : '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column' }}>
           <Mono>FIG_00 · ON_DEVICE_TTS</Mono>
-          <h1 style={{ fontFamily: 'Geist, ui-sans-serif, system-ui', fontSize: 76, lineHeight: 0.96, letterSpacing: '-0.035em', fontWeight: 500, margin: '36px 0 0', color: '#fff' }}>
+          <h1 style={{ fontFamily: 'Geist, ui-sans-serif, system-ui', fontSize: isMobile ? 52 : 76, lineHeight: 0.96, letterSpacing: '-0.035em', fontWeight: 500, margin: '32px 0 0', color: '#fff' }}>
             Any voice
             <br />
             you can
@@ -69,12 +127,12 @@ function Hero({ accent }) {
             <br />
             or imagine.
           </h1>
-          <p style={{ fontFamily: 'ui-monospace, "JetBrains Mono", monospace', fontSize: 13, lineHeight: 1.7, color: 'rgba(255,255,255,0.65)', margin: '40px 0 0', maxWidth: 360 }}>
+          <p style={{ fontFamily: 'ui-monospace, "JetBrains Mono", monospace', fontSize: 13, lineHeight: 1.7, color: 'rgba(255,255,255,0.65)', margin: '36px 0 0', maxWidth: 360 }}>
             PolyJuiceVoice runs Qwen3-TTS natively on your Mac. Speak text in
             preset voices, design new ones from a description, or clone yours
             from a few seconds of audio — all on Metal, none of it leaves the device.
           </p>
-          <div style={{ marginTop: 'auto', paddingTop: 56, display: 'flex', alignItems: 'center', gap: 28 }}>
+          <div style={{ marginTop: isMobile ? 36 : 'auto', paddingTop: isMobile ? 0 : 56, display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap' }}>
             <a href="#" style={{ color: '#fff', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'ui-monospace, monospace', fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,0.4)', paddingBottom: 4 }}>
               Download · 96 MB <Arrow size={12} />
             </a>
@@ -83,14 +141,18 @@ function Hero({ accent }) {
             </a>
           </div>
         </div>
-        <div style={{ position: 'relative', padding: '32px 32px 32px 0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ position: 'absolute', top: 24, left: 24 }}>
-            <Mono dim>FIG_01 · NOW_SPEAKING</Mono>
-          </div>
+        <div style={{ position: 'relative', padding: isMobile ? '28px 24px' : '32px 32px 32px 0', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: isMobile ? 240 : 'auto' }}>
+          {!isMobile && (
+            <div style={{ position: 'absolute', top: 24, left: 24 }}>
+              <Mono dim>FIG_01 · NOW_SPEAKING</Mono>
+            </div>
+          )}
           <IllusMicHero accent={accent} />
-          <div style={{ position: 'absolute', bottom: 24, right: 32 }}>
-            <Mono dim>00:02 / 00:08 · 24 KHZ · MONO</Mono>
-          </div>
+          {!isMobile && (
+            <div style={{ position: 'absolute', bottom: 24, right: 32 }}>
+              <Mono dim>00:02 / 00:08 · 24 KHZ · MONO</Mono>
+            </div>
+          )}
         </div>
       </div>
     </section>
@@ -115,14 +177,21 @@ function Marquee() {
 
 // =================== Feature Grid ===================
 function FeatureGrid({ accent }) {
+  const { isMobile, isTablet } = useBreakpoint();
+  const P = isMobile ? '28px 20px' : 48;
+  const col2 = isMobile ? '1fr' : '1fr 1fr';
+  const col3 = isMobile ? '1fr' : (isTablet ? '1fr 1fr' : '1fr 1fr 1fr');
+  const br = isMobile ? 'none' : '1px solid rgba(255,255,255,0.06)';
+
   return (
     <section style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+
         {/* Row 1 — Native to the metal */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.6fr', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <div style={{ padding: 48, borderRight: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1.6fr', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ padding: P, borderRight: br }}>
             <Mono>FIG_02</Mono>
-            <h2 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 44, lineHeight: 1, letterSpacing: '-0.025em', fontWeight: 500, margin: '32px 0 0', color: '#fff' }}>
+            <h2 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: isMobile ? 32 : 44, lineHeight: 1, letterSpacing: '-0.025em', fontWeight: 500, margin: '32px 0 0', color: '#fff' }}>
               Native to<br />the metal.
             </h2>
             <p style={{ fontFamily: 'ui-monospace, monospace', fontSize: 12, lineHeight: 1.7, color: 'rgba(255,255,255,0.6)', margin: '28px 0 0', maxWidth: 320 }}>
@@ -130,23 +199,23 @@ function FeatureGrid({ accent }) {
               No Python, no Docker, no GPU required — and the iOS Simulator
               is not invited (Metal hardware only).
             </p>
-            <div style={{ marginTop: 56 }}>
+            <div style={{ marginTop: isMobile ? 28 : 56 }}>
               <a href="#" style={{ color: '#fff', fontFamily: 'ui-monospace, monospace', fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.3)', paddingBottom: 4, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 Benchmarks <Arrow size={12} />
               </a>
             </div>
           </div>
-          <div style={{ position: 'relative', padding: 48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ position: 'absolute', top: 24, left: 24 }}><Mono dim>SILICON_M1 / M2 / M3 / M4</Mono></div>
+          <div style={{ position: 'relative', padding: P, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: isMobile ? 200 : 'auto' }}>
+            {!isMobile && <div style={{ position: 'absolute', top: 24, left: 24 }}><Mono dim>SILICON_M1 / M2 / M3 / M4</Mono></div>}
             <IllusChip accent={accent} />
           </div>
         </div>
 
-        {/* Row 2 — three columns: Wave / Modes / Phonemes */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr' }}>
-          <div style={{ padding: 48, borderRight: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column' }}>
+        {/* Row 2 — three columns: Wave / Modes / Style */}
+        <div style={{ display: 'grid', gridTemplateColumns: col3 }}>
+          <div style={{ padding: P, borderRight: br, display: 'flex', flexDirection: 'column' }}>
             <Mono>FIG_03</Mono>
-            <div style={{ height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '24px 0 32px' }}>
+            <div style={{ height: isMobile ? 160 : 220, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '24px 0 32px' }}>
               <IllusWave accent={accent} />
             </div>
             <h3 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 22, fontWeight: 500, letterSpacing: '-0.01em', margin: 0, color: '#fff' }}>Live waveform & scrubber</h3>
@@ -156,9 +225,9 @@ function FeatureGrid({ accent }) {
             </p>
           </div>
 
-          <div style={{ padding: 48, borderRight: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: P, borderRight: br, display: 'flex', flexDirection: 'column' }}>
             <Mono>FIG_04</Mono>
-            <div style={{ height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '24px 0 32px' }}>
+            <div style={{ height: isMobile ? 160 : 220, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '24px 0 32px' }}>
               <IllusModes accent={accent} />
             </div>
             <h3 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 22, fontWeight: 500, letterSpacing: '-0.01em', margin: 0, color: '#fff' }}>Four working modes</h3>
@@ -173,9 +242,9 @@ function FeatureGrid({ accent }) {
             </div>
           </div>
 
-          <div style={{ padding: 48, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: P, display: 'flex', flexDirection: 'column' }}>
             <Mono>FIG_05</Mono>
-            <div style={{ height: 220, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', margin: '24px 0 32px', flexDirection: 'column', gap: 14 }}>
+            <div style={{ height: isMobile ? 160 : 220, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', margin: '24px 0 32px', flexDirection: 'column', gap: 14 }}>
               {/* Style instruction block */}
               <div style={{ width: '100%', background: '#0c0c10', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: 14, fontFamily: 'ui-monospace, monospace', fontSize: 11, color: 'rgba(255,255,255,0.65)', lineHeight: 1.6 }}>
                 <div style={{ color: accent }}>style:</div>
@@ -204,10 +273,10 @@ function FeatureGrid({ accent }) {
         </div>
 
         {/* Row 3 — Voice library card preview */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          <div style={{ padding: 48, borderRight: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1.4fr', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ padding: P, borderRight: br }}>
             <Mono>FIG_06</Mono>
-            <h3 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 32, fontWeight: 500, letterSpacing: '-0.02em', margin: '24px 0 0', color: '#fff' }}>
+            <h3 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: isMobile ? 26 : 32, fontWeight: 500, letterSpacing: '-0.02em', margin: '24px 0 0', color: '#fff' }}>
               One library<br />for every voice<br />you keep.
             </h3>
             <p style={{ fontFamily: 'ui-monospace, monospace', fontSize: 12, lineHeight: 1.7, color: 'rgba(255,255,255,0.55)', margin: '20px 0 32px', maxWidth: 360 }}>
@@ -227,44 +296,44 @@ function FeatureGrid({ accent }) {
               ))}
             </div>
           </div>
-          <div style={{ padding: 48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ padding: P, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: isMobile ? 200 : 'auto' }}>
             <IllusVoiceCards accent={accent} />
           </div>
         </div>
 
         {/* Row 4 — Design / Clone walkthroughs */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          <div style={{ padding: 48, borderRight: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: col2, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ padding: P, borderRight: br, display: 'flex', flexDirection: 'column' }}>
             <Mono>FIG_07</Mono>
-            <h3 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 28, fontWeight: 500, letterSpacing: '-0.02em', margin: '20px 0 0', color: '#fff' }}>Design a voice from words.</h3>
+            <h3 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: isMobile ? 22 : 28, fontWeight: 500, letterSpacing: '-0.02em', margin: '20px 0 0', color: '#fff' }}>Design a voice from words.</h3>
             <p style={{ fontFamily: 'ui-monospace, monospace', fontSize: 12, lineHeight: 1.7, color: 'rgba(255,255,255,0.55)', margin: '14px 0 24px', maxWidth: 460 }}>
               Describe what you want — "gravelly older man, slow cadence" — and
               the model reads your text back in that voice. Iterate until it
               clicks. Save it to the library.
             </p>
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: isMobile ? 160 : 'auto' }}>
               <IllusDesign accent={accent} />
             </div>
           </div>
-          <div style={{ padding: 48, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: P, display: 'flex', flexDirection: 'column' }}>
             <Mono>FIG_08</Mono>
-            <h3 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 28, fontWeight: 500, letterSpacing: '-0.02em', margin: '20px 0 0', color: '#fff' }}>Clone from a few seconds.</h3>
+            <h3 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: isMobile ? 22 : 28, fontWeight: 500, letterSpacing: '-0.02em', margin: '20px 0 0', color: '#fff' }}>Clone from a few seconds.</h3>
             <p style={{ fontFamily: 'ui-monospace, monospace', fontSize: 12, lineHeight: 1.7, color: 'rgba(255,255,255,0.55)', margin: '14px 0 24px', maxWidth: 460 }}>
               Record a short reference (⌘R), type its transcript word-for-word,
               then write whatever you want said next. Same voice, new words —
               everything stays on your Mac.
             </p>
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: isMobile ? 160 : 'auto' }}>
               <IllusClone accent={accent} />
             </div>
           </div>
         </div>
 
         {/* Row 5 — Reference upload / Phonemes / Export */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          <div style={{ padding: 48, borderRight: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: col3, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ padding: P, borderRight: br, display: 'flex', flexDirection: 'column' }}>
             <Mono>FIG_09</Mono>
-            <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '24px 0 32px' }}>
+            <div style={{ height: isMobile ? 140 : 200, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '24px 0 32px' }}>
               <IllusDropzone accent={accent} />
             </div>
             <h3 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 22, fontWeight: 500, letterSpacing: '-0.01em', margin: 0, color: '#fff' }}>Drop or record</h3>
@@ -274,9 +343,9 @@ function FeatureGrid({ accent }) {
             </p>
           </div>
 
-          <div style={{ padding: 48, borderRight: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: P, borderRight: br, display: 'flex', flexDirection: 'column' }}>
             <Mono>FIG_10</Mono>
-            <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '24px 0 32px' }}>
+            <div style={{ height: isMobile ? 140 : 200, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '24px 0 32px' }}>
               <IllusPhonemes accent={accent} />
             </div>
             <h3 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 22, fontWeight: 500, letterSpacing: '-0.01em', margin: 0, color: '#fff' }}>Built on Qwen3-TTS</h3>
@@ -286,9 +355,9 @@ function FeatureGrid({ accent }) {
             </p>
           </div>
 
-          <div style={{ padding: 48, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: P, display: 'flex', flexDirection: 'column' }}>
             <Mono>FIG_11</Mono>
-            <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '24px 0 32px' }}>
+            <div style={{ height: isMobile ? 140 : 200, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '24px 0 32px' }}>
               <ExportIllus accent={accent} />
             </div>
             <h3 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 22, fontWeight: 500, letterSpacing: '-0.01em', margin: 0, color: '#fff' }}>Export & share</h3>
@@ -300,13 +369,13 @@ function FeatureGrid({ accent }) {
         </div>
 
         {/* Row 6 — Trust strip */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: col3, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           {[
             { fig: 'FIG_12', title: 'Sandboxed', body: 'App Sandbox enabled. Microphone access is granted explicitly for Clone and stays scoped to the app.' },
             { fig: 'FIG_13', title: 'Pure Swift / MLX', body: 'On-device inference via mlx-swift. First launch downloads weights; everything after is fully offline.' },
             { fig: 'FIG_14', title: 'Debug log', body: 'Built-in log viewer for monitoring renders and downloads — no Console.app spelunking needed.' },
           ].map((it, i) => (
-            <div key={it.fig} style={{ padding: 48, borderRight: i < 2 ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
+            <div key={it.fig} style={{ padding: P, borderRight: (!isMobile && i < 2) ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
               <Mono>{it.fig}</Mono>
               <h3 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 22, fontWeight: 500, letterSpacing: '-0.01em', margin: '20px 0 0', color: '#fff' }}>{it.title}</h3>
               <p style={{ fontFamily: 'ui-monospace, monospace', fontSize: 12, lineHeight: 1.7, color: 'rgba(255,255,255,0.55)', margin: '12px 0 0' }}>{it.body}</p>
@@ -356,8 +425,9 @@ const YOUR_VOICES = [
 ];
 
 function StudioDemo({ accent }) {
+  const { isMobile } = useBreakpoint();
   const [tab, setTab] = React.useState('Speak');
-  const [voice, setVoice] = React.useState(YOUR_VOICES[0]); // Prakhar — cloned
+  const [voice, setVoice] = React.useState(YOUR_VOICES[0]);
   const [prompt, setPrompt] = React.useState("Hello World! PolyJuiceVoice is an on-device text-to-speech for macOS (and iOS) with voice cloning and voice design, powered by Apple's MLX and the Qwen3-TTS family of models. Everything runs locally over Metal — no audio, transcripts, or recordings ever leave the device.");
   const [language, setLanguage] = React.useState('English');
   const [generating, setGenerating] = React.useState(false);
@@ -393,19 +463,11 @@ function StudioDemo({ accent }) {
     return () => cancelAnimationFrame(raf);
   }, [playing]);
 
-  const startSpeak = () => {
-    setGenFrac(0);
-    setGenerating(true);
-    setPlaying(false);
-    setPlayhead(0);
-  };
-
   // waveform bars — speech-shaped (sentence envelope)
   const bars = React.useMemo(() => {
     const N = 110;
     return Array.from({ length: N }).map((_, i) => {
       const t = i / (N - 1);
-      // multi-syllable envelope
       const env = Math.max(0.08, Math.sin(t * Math.PI * 1.3) * 0.5 + Math.sin(t * Math.PI * 4.2) * 0.4 + 0.2);
       const noise = Math.abs(Math.sin(i * 0.7 + voice.id.length) * 0.55 + Math.cos(i * 0.31) * 0.4);
       return 0.1 + Math.max(0, env) * noise;
@@ -416,18 +478,20 @@ function StudioDemo({ accent }) {
 
   return (
     <section style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '88px 32px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 48 }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: isMobile ? '48px 20px' : '88px 32px' }}>
+        <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'flex-end', marginBottom: isMobile ? 28 : 48, gap: isMobile ? 12 : 0 }}>
           <div>
             <Mono>FIG_15 · POLYJUICEVOICE_APP</Mono>
-            <h2 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 56, lineHeight: 1, letterSpacing: '-0.03em', fontWeight: 500, margin: '20px 0 0', color: '#fff', maxWidth: 700 }}>
+            <h2 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: isMobile ? 36 : 56, lineHeight: 1, letterSpacing: '-0.03em', fontWeight: 500, margin: '20px 0 0', color: '#fff', maxWidth: 700 }}>
               Four modes,<br />
               one <span style={{ fontStyle: 'italic', fontFamily: 'Instrument Serif, Georgia, serif', fontWeight: 400 }}>quiet</span> window.
             </h2>
           </div>
-          <div style={{ textAlign: 'right' }}>
-            <Mono dim>FROM_THE_REAL_APP · v0.3</Mono>
-          </div>
+          {!isMobile && (
+            <div style={{ textAlign: 'right' }}>
+              <Mono dim>FROM_THE_REAL_APP · v0.3</Mono>
+            </div>
+          )}
         </div>
 
         {/* App window */}
@@ -454,44 +518,37 @@ function StudioDemo({ accent }) {
           </div>
 
           {/* Body */}
-          <div style={{ display: 'grid', gridTemplateColumns: '180px 1fr', minHeight: 640, background: '#0f0f10' }}>
-            {/* Sidebar */}
-            <div style={{ background: '#0f0f10', borderRight: '1px solid rgba(255,255,255,0.04)', padding: '12px 10px' }}>
-              {[
-                { name: 'Speak',    icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="2" y1="7" x2="2" y2="7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /><line x1="4.5" y1="4.5" x2="4.5" y2="9.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /><line x1="7" y1="2" x2="7" y2="12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /><line x1="9.5" y1="4.5" x2="9.5" y2="9.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /><line x1="12" y1="6" x2="12" y2="8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg> },
-                { name: 'Design',   icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1 L8.2 5.5 L12.5 7 L8.2 8.5 L7 13 L5.8 8.5 L1.5 7 L5.8 5.5 Z" stroke="currentColor" strokeWidth="1.2" /></svg> },
-                { name: 'Clone',    icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="5" y="2" width="4" height="6" rx="2" stroke="currentColor" strokeWidth="1.2" /><path d="M3 7 Q3 11 7 11 Q11 11 11 7 M7 11 L7 13" stroke="currentColor" strokeWidth="1.2" /></svg> },
-                { name: 'Library',  icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="2" width="2.5" height="10" stroke="currentColor" strokeWidth="1.2" /><rect x="5.5" y="2" width="2.5" height="10" stroke="currentColor" strokeWidth="1.2" /><rect x="9" y="3" width="2.5" height="9" stroke="currentColor" strokeWidth="1.2" transform="rotate(-12 10.25 7.5)" /></svg> },
-                { name: 'Settings', icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2" stroke="currentColor" strokeWidth="1.2" /><path d="M7 1.5 L7 3 M7 11 L7 12.5 M1.5 7 L3 7 M11 7 L12.5 7 M3 3 L4 4 M10 10 L11 11 M3 11 L4 10 M10 4 L11 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg> },
-              ].map((it) => {
-                const active = tab === it.name;
-                return (
-                  <button
-                    key={it.name}
-                    onClick={() => setTab(it.name)}
-                    style={{
-                      width: '100%',
-                      textAlign: 'left',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 10,
-                      padding: '8px 10px',
-                      marginBottom: 2,
-                      borderRadius: 6,
-                      background: active ? 'rgba(255,255,255,0.07)' : 'transparent',
-                      color: active ? '#fff' : 'rgba(255,255,255,0.7)',
-                      border: 'none',
-                      fontFamily: 'Geist, ui-sans-serif',
-                      fontSize: 13,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <span style={{ width: 14, height: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: active ? 1 : 0.7 }}>{it.icon}</span>
-                    {it.name}
-                  </button>
-                );
-              })}
-            </div>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '180px 1fr', minHeight: isMobile ? 'auto' : 640, background: '#0f0f10' }}>
+            {/* Sidebar — hidden on mobile */}
+            {!isMobile && (
+              <div style={{ background: '#0f0f10', borderRight: '1px solid rgba(255,255,255,0.04)', padding: '12px 10px' }}>
+                {[
+                  { name: 'Speak',    icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="2" y1="7" x2="2" y2="7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /><line x1="4.5" y1="4.5" x2="4.5" y2="9.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /><line x1="7" y1="2" x2="7" y2="12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /><line x1="9.5" y1="4.5" x2="9.5" y2="9.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /><line x1="12" y1="6" x2="12" y2="8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg> },
+                  { name: 'Design',   icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1 L8.2 5.5 L12.5 7 L8.2 8.5 L7 13 L5.8 8.5 L1.5 7 L5.8 5.5 Z" stroke="currentColor" strokeWidth="1.2" /></svg> },
+                  { name: 'Clone',    icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="5" y="2" width="4" height="6" rx="2" stroke="currentColor" strokeWidth="1.2" /><path d="M3 7 Q3 11 7 11 Q11 11 11 7 M7 11 L7 13" stroke="currentColor" strokeWidth="1.2" /></svg> },
+                  { name: 'Library',  icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="2" width="2.5" height="10" stroke="currentColor" strokeWidth="1.2" /><rect x="5.5" y="2" width="2.5" height="10" stroke="currentColor" strokeWidth="1.2" /><rect x="9" y="3" width="2.5" height="9" stroke="currentColor" strokeWidth="1.2" transform="rotate(-12 10.25 7.5)" /></svg> },
+                  { name: 'Settings', icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2" stroke="currentColor" strokeWidth="1.2" /><path d="M7 1.5 L7 3 M7 11 L7 12.5 M1.5 7 L3 7 M11 7 L12.5 7 M3 3 L4 4 M10 10 L11 11 M3 11 L4 10 M10 4 L11 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg> },
+                ].map((it) => {
+                  const active = tab === it.name;
+                  return (
+                    <button
+                      key={it.name}
+                      onClick={() => setTab(it.name)}
+                      style={{
+                        width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10,
+                        padding: '8px 10px', marginBottom: 2, borderRadius: 6,
+                        background: active ? 'rgba(255,255,255,0.07)' : 'transparent',
+                        color: active ? '#fff' : 'rgba(255,255,255,0.7)',
+                        border: 'none', fontFamily: 'Geist, ui-sans-serif', fontSize: 13, cursor: 'pointer',
+                      }}
+                    >
+                      <span style={{ width: 14, height: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: active ? 1 : 0.7 }}>{it.icon}</span>
+                      {it.name}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Main column */}
             <div style={{ display: 'flex', flexDirection: 'column', background: '#161618', position: 'relative' }}>
@@ -500,7 +557,7 @@ function StudioDemo({ accent }) {
                 <div style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 17, fontWeight: 600, color: '#fff' }}>{tab}</div>
               </div>
 
-              <div style={{ padding: '20px 28px 100px', overflow: 'auto', flex: 1 }}>
+              <div style={{ padding: isMobile ? '20px 20px 100px' : '20px 28px 100px', overflow: 'auto', flex: 1 }}>
                 {/* Voice */}
                 <div style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 12, color: 'rgba(255,255,255,0.55)', marginBottom: 12 }}>Voice</div>
 
@@ -519,12 +576,8 @@ function StudioDemo({ accent }) {
                         style={{
                           background: active ? 'rgba(29,167,255,0.18)' : '#1c1c1f',
                           border: `1px solid ${active ? 'rgba(29,167,255,0.6)' : 'rgba(255,255,255,0.08)'}`,
-                          color: '#fff',
-                          padding: '5px 14px',
-                          borderRadius: 999,
-                          fontFamily: 'Geist, ui-sans-serif',
-                          fontSize: 13,
-                          cursor: 'pointer',
+                          color: '#fff', padding: '5px 14px', borderRadius: 999,
+                          fontFamily: 'Geist, ui-sans-serif', fontSize: 13, cursor: 'pointer',
                         }}
                       >
                         {v.label}
@@ -548,13 +601,9 @@ function StudioDemo({ accent }) {
                         style={{
                           background: active ? '#a855f7' : 'rgba(168,85,247,0.12)',
                           border: `1px solid ${active ? '#a855f7' : 'rgba(168,85,247,0.4)'}`,
-                          color: '#fff',
-                          padding: '5px 14px',
-                          borderRadius: 999,
-                          fontFamily: 'Geist, ui-sans-serif',
-                          fontSize: 13,
-                          fontWeight: active ? 500 : 400,
-                          cursor: 'pointer',
+                          color: '#fff', padding: '5px 14px', borderRadius: 999,
+                          fontFamily: 'Geist, ui-sans-serif', fontSize: 13,
+                          fontWeight: active ? 500 : 400, cursor: 'pointer',
                         }}
                       >
                         {v.label}
@@ -563,14 +612,9 @@ function StudioDemo({ accent }) {
                   })}
                   <button
                     style={{
-                      background: 'transparent',
-                      border: '1px dashed rgba(255,255,255,0.15)',
-                      color: 'rgba(255,255,255,0.5)',
-                      padding: '5px 14px',
-                      borderRadius: 999,
-                      fontFamily: 'Geist, ui-sans-serif',
-                      fontSize: 13,
-                      cursor: 'pointer',
+                      background: 'transparent', border: '1px dashed rgba(255,255,255,0.15)',
+                      color: 'rgba(255,255,255,0.5)', padding: '5px 14px', borderRadius: 999,
+                      fontFamily: 'Geist, ui-sans-serif', fontSize: 13, cursor: 'pointer',
                     }}
                   >
                     + Clone or design
@@ -584,17 +628,10 @@ function StudioDemo({ accent }) {
                   onChange={(e) => setPrompt(e.target.value)}
                   rows="4"
                   style={{
-                    width: '100%',
-                    background: '#0f0f10',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                    borderRadius: 8,
-                    padding: '14px 16px',
-                    color: '#fff',
-                    fontFamily: 'Geist, ui-sans-serif',
-                    fontSize: 14,
-                    lineHeight: 1.55,
-                    outline: 'none',
-                    resize: 'vertical',
+                    width: '100%', background: '#0f0f10', border: '1px solid rgba(255,255,255,0.06)',
+                    borderRadius: 8, padding: '14px 16px', color: '#fff',
+                    fontFamily: 'Geist, ui-sans-serif', fontSize: 14, lineHeight: 1.55,
+                    outline: 'none', resize: 'vertical',
                   }}
                 />
 
@@ -604,17 +641,10 @@ function StudioDemo({ accent }) {
                   <button
                     onClick={() => setLanguage((l) => l === 'English' ? 'Spanish' : l === 'Spanish' ? 'Mandarin' : 'English')}
                     style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 8,
-                      background: 'rgba(255,255,255,0.06)',
-                      border: 'none',
-                      color: '#fff',
-                      padding: '6px 10px 6px 12px',
-                      borderRadius: 6,
-                      fontFamily: 'Geist, ui-sans-serif',
-                      fontSize: 13,
-                      cursor: 'pointer',
+                      display: 'inline-flex', alignItems: 'center', gap: 8,
+                      background: 'rgba(255,255,255,0.06)', border: 'none', color: '#fff',
+                      padding: '6px 10px 6px 12px', borderRadius: 6,
+                      fontFamily: 'Geist, ui-sans-serif', fontSize: 13, cursor: 'pointer',
                     }}
                   >
                     {language}
@@ -630,11 +660,9 @@ function StudioDemo({ accent }) {
                       const past = t <= playhead;
                       return (
                         <div key={i} style={{
-                          flex: 1,
-                          height: `${b * 100}%`,
+                          flex: 1, height: `${b * 100}%`,
                           background: past ? '#1da7ff' : '#1976d2',
-                          opacity: past ? 1 : 0.55,
-                          borderRadius: 0,
+                          opacity: past ? 1 : 0.55, borderRadius: 0,
                         }} />
                       );
                     })}
@@ -666,22 +694,15 @@ function StudioDemo({ accent }) {
                 </div>
               </div>
 
-              {/* Bottom Speak CTA — bonded to main column */}
-              <div style={{ position: 'absolute', left: 24, right: 24, bottom: 24 }}>
+              {/* Bottom Speak CTA */}
+              <div style={{ position: 'absolute', left: isMobile ? 12 : 24, right: isMobile ? 12 : 24, bottom: 24 }}>
                 <button
                   onClick={() => { setGenFrac(1); setPlaying(true); setPlayhead(0); }}
                   style={{
-                    width: '100%',
-                    background: accent,
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: 10,
-                    padding: '14px 0',
-                    fontFamily: 'Geist, ui-sans-serif',
-                    fontSize: 15,
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                    boxShadow: `0 12px 28px ${accent}33`,
+                    width: '100%', background: accent, color: '#fff', border: 'none',
+                    borderRadius: 10, padding: '14px 0',
+                    fontFamily: 'Geist, ui-sans-serif', fontSize: 15, fontWeight: 500,
+                    cursor: 'pointer', boxShadow: `0 12px 28px ${accent}33`,
                   }}
                 >
                   Speak
@@ -692,7 +713,7 @@ function StudioDemo({ accent }) {
         </div>
 
         {/* Caption row */}
-        <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+        <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: isMobile ? 20 : 24 }}>
           {[
             ['VOICE', voice.label + (isPreset ? ' · preset' : ' · cloned'), 'Cloned voices have their character baked in. Style instructions only apply to presets.'],
             ['MODEL', 'Qwen3-TTS 1.7B · q4', 'Models load on first run; switch precision in Settings.'],
@@ -715,16 +736,9 @@ const FieldLabel = ({ children, style = {} }) => (
 );
 
 const fieldStyle = {
-  width: '100%',
-  background: '#1c1c1f',
-  border: '1px solid rgba(255,255,255,0.06)',
-  borderRadius: 6,
-  padding: '10px 12px',
-  color: '#fff',
-  fontFamily: 'Geist, ui-sans-serif',
-  fontSize: 13,
-  outline: 'none',
-  resize: 'vertical',
+  width: '100%', background: '#1c1c1f', border: '1px solid rgba(255,255,255,0.06)',
+  borderRadius: 6, padding: '10px 12px', color: '#fff',
+  fontFamily: 'Geist, ui-sans-serif', fontSize: 13, outline: 'none', resize: 'vertical',
 };
 
 function formatTime(s) {
@@ -735,25 +749,26 @@ function formatTime(s) {
 
 // =================== Specs ===================
 function Specs({ accent }) {
+  const { isMobile } = useBreakpoint();
   return (
     <section style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-      <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1.4fr' }}>
-        <div style={{ padding: 56, borderRight: '1px solid rgba(255,255,255,0.06)' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1.4fr' }}>
+        <div style={{ padding: isMobile ? '32px 24px' : 56, borderRight: isMobile ? 'none' : '1px solid rgba(255,255,255,0.06)', borderBottom: isMobile ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
           <Mono>FIG_16</Mono>
-          <h2 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 44, lineHeight: 1, letterSpacing: '-0.025em', fontWeight: 500, margin: '24px 0 0', color: '#fff' }}>Specs.</h2>
+          <h2 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: isMobile ? 32 : 44, lineHeight: 1, letterSpacing: '-0.025em', fontWeight: 500, margin: '24px 0 0', color: '#fff' }}>Specs.</h2>
           <p style={{ fontFamily: 'ui-monospace, monospace', fontSize: 12, lineHeight: 1.7, color: 'rgba(255,255,255,0.55)', margin: '24px 0 0', maxWidth: 320 }}>
             What you need to run PolyJuiceVoice. What you get when you do.
           </p>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
-          <SpecBlock label="REQUIRES" rows={[
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr' }}>
+          <SpecBlock label="REQUIRES" isMobile={isMobile} rows={[
             ['macOS', '26+ (primary)'],
             ['iOS', '26+ (device only)'],
             ['chip', 'Apple Silicon'],
             ['xcode', '17+ to build'],
             ['simulator', 'not supported'],
           ]} />
-          <SpecBlock label="DELIVERS" accent={accent} rows={[
+          <SpecBlock label="DELIVERS" accent={accent} isMobile={isMobile} rows={[
             ['models', 'Qwen3-TTS 0.6B / 1.7B'],
             ['precisions', 'q4 · q6 · q8 · bf16'],
             ['inference', 'mlx-swift on Metal'],
@@ -766,9 +781,9 @@ function Specs({ accent }) {
   );
 }
 
-function SpecBlock({ label, rows, accent }) {
+function SpecBlock({ label, rows, accent, isMobile }) {
   return (
-    <div style={{ padding: 56, borderRight: '1px solid rgba(255,255,255,0.06)' }}>
+    <div style={{ padding: isMobile ? '28px 24px' : 56, borderRight: '1px solid rgba(255,255,255,0.06)', borderBottom: isMobile ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
       <Mono style={{ color: accent || 'rgba(255,255,255,0.7)' }}>{label}</Mono>
       <table style={{ marginTop: 24, width: '100%', fontFamily: 'ui-monospace, monospace', fontSize: 13, borderCollapse: 'collapse' }}>
         <tbody>
@@ -786,17 +801,18 @@ function SpecBlock({ label, rows, accent }) {
 
 // =================== CTA ===================
 function Cta({ accent }) {
+  const { isMobile } = useBreakpoint();
   return (
-    <section style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '120px 32px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+    <section style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', padding: isMobile ? '72px 24px' : '120px 32px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
       <div style={{ maxWidth: 900, margin: '0 auto', position: 'relative' }}>
         <Mono>FIG_17 · BEGIN</Mono>
-        <h2 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 96, lineHeight: 0.95, letterSpacing: '-0.04em', fontWeight: 500, margin: '32px 0 0', color: '#fff' }}>
+        <h2 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: isMobile ? 52 : 96, lineHeight: isMobile ? 1.05 : 0.95, letterSpacing: '-0.04em', fontWeight: 500, margin: '32px 0 0', color: '#fff' }}>
           Speak in any<br />
           <span style={{ fontStyle: 'italic', fontFamily: 'Instrument Serif, Georgia, serif', fontWeight: 400 }}>voice</span> — without<br />
           ever leaving your Mac.
         </h2>
-        <div style={{ marginTop: 56, display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
-          <button style={{ background: '#fff', border: 'none', color: '#000', fontFamily: 'Geist, ui-sans-serif', fontSize: 15, fontWeight: 500, padding: '14px 28px', borderRadius: 4, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ marginTop: isMobile ? 40 : 56, display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 16, width: isMobile ? '100%' : 'auto' }}>
+          <button style={{ background: '#fff', border: 'none', color: '#000', fontFamily: 'Geist, ui-sans-serif', fontSize: 15, fontWeight: 500, padding: '14px 28px', borderRadius: 4, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 10, width: isMobile ? '100%' : 'auto', justifyContent: 'center' }}>
             ⌘ Download PolyJuiceVoice 0.3 · Apple Silicon
           </button>
           <Mono dim>96 MB · macOS 26+ · MIT-LICENSED</Mono>
@@ -808,10 +824,12 @@ function Cta({ accent }) {
 
 // =================== Footer ===================
 function Footer() {
+  const { isMobile, isTablet } = useBreakpoint();
+  const cols = isMobile ? '1fr 1fr' : (isTablet ? '1fr 1fr 1fr' : '2fr 1fr 1fr 1fr 1fr');
   return (
-    <footer style={{ padding: '48px 32px 32px' }}>
-      <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr', gap: 32, alignItems: 'start' }}>
-        <div>
+    <footer style={{ padding: isMobile ? '40px 20px 24px' : '48px 32px 32px' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: cols, gap: isMobile ? 28 : 32, alignItems: 'start' }}>
+        <div style={{ gridColumn: isMobile ? '1 / -1' : 'auto' }}>
           <div style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 14, color: '#fff', fontWeight: 500 }}>PolyJuiceVoice</div>
           <div style={{ fontFamily: 'ui-monospace, monospace', fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 8, lineHeight: 1.6 }}>
             Built by Team AER.<br />On-device speech, end to end.
@@ -833,7 +851,7 @@ function Footer() {
           </div>
         ))}
       </div>
-      <div style={{ maxWidth: 1280, margin: '48px auto 0', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16, display: 'flex', justifyContent: 'space-between', fontFamily: 'ui-monospace, monospace', fontSize: 11, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.08em' }}>
+      <div style={{ maxWidth: 1280, margin: '48px auto 0', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, fontFamily: 'ui-monospace, monospace', fontSize: 11, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.08em' }}>
         <div>© 2026 TEAM AER · ALL ON-DEVICE, ALL THE TIME</div>
         <div>v0.3 · QWEN3-TTS · MLX-SWIFT</div>
       </div>

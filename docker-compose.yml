@@ -4,3 +4,8 @@ services:
     ports:
       - "8080:80"
     restart: unless-stopped
+    volumes:
+      - ./index.html:/usr/share/nginx/html/index.html:ro
+      - ./sections.jsx:/usr/share/nginx/html/sections.jsx:ro
+      - ./illustrations.jsx:/usr/share/nginx/html/illustrations.jsx:ro
+      - ./tweaks-panel.jsx:/usr/share/nginx/html/tweaks-panel.jsx:ro
