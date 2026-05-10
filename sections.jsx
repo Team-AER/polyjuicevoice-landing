@@ -53,8 +53,13 @@ function TopNav({ accent }) {
 
         {!isMobile && (
           <nav style={{ display: 'flex', gap: 24, marginLeft: 'auto' }}>
-            {['Speak', 'Voices', 'Models', 'Docs'].map((n) => (
-              <a key={n} href="#" style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>{n}</a>
+            {[
+              { label: 'Speak',  href: '#speak' },
+              { label: 'Voices', href: '#voices' },
+              { label: 'Models', href: '#models' },
+              { label: 'Docs',   href: 'https://github.com/Team-AER/PolyJuiceVoice/tree/main/docs' },
+            ].map(({ label, href }) => (
+              <a key={label} href={href} style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>{label}</a>
             ))}
           </nav>
         )}
@@ -93,10 +98,15 @@ function TopNav({ accent }) {
 
       {isMobile && open && (
         <nav style={{ background: 'rgba(8,8,10,0.98)', backdropFilter: 'blur(16px)', borderTop: '1px solid rgba(255,255,255,0.04)', padding: '8px 20px 16px', display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {['Speak', 'Voices', 'Models', 'Docs'].map((n) => (
-            <a key={n} href="#" style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 15, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', padding: '10px 8px', display: 'block', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{n}</a>
+          {[
+            { label: 'Speak',  href: '#speak' },
+            { label: 'Voices', href: '#voices' },
+            { label: 'Models', href: '#models' },
+            { label: 'Docs',   href: 'https://github.com/Team-AER/PolyJuiceVoice/tree/main/docs' },
+          ].map(({ label, href }) => (
+            <a key={label} href={href} onClick={() => setOpen(false)} style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 15, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', padding: '10px 8px', display: 'block', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{label}</a>
           ))}
-          <a href="https://github.com/Team-AER/PolyJuiceVoice" style={{ fontFamily: 'ui-monospace, monospace', fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6, padding: '10px 8px' }}>
+          <a href="https://github.com/Team-AER/PolyJuiceVoice" onClick={() => setOpen(false)} style={{ fontFamily: 'ui-monospace, monospace', fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6, padding: '10px 8px' }}>
             GITHUB <Arrow size={12} />
           </a>
           <div style={{ paddingTop: 8 }}>
@@ -184,7 +194,7 @@ function FeatureGrid({ accent }) {
   const br = isMobile ? 'none' : '1px solid rgba(255,255,255,0.06)';
 
   return (
-    <section style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+    <section id="voices" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto' }}>
 
         {/* Row 1 — Native to the metal */}
@@ -477,7 +487,7 @@ function StudioDemo({ accent }) {
   const isPreset = voice.type === 'preset';
 
   return (
-    <section style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+    <section id="speak" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: isMobile ? '48px 20px' : '88px 32px' }}>
         <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'flex-end', marginBottom: isMobile ? 28 : 48, gap: isMobile ? 12 : 0 }}>
           <div>
@@ -751,7 +761,7 @@ function formatTime(s) {
 function Specs({ accent }) {
   const { isMobile } = useBreakpoint();
   return (
-    <section style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+    <section id="models" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1.4fr' }}>
         <div style={{ padding: isMobile ? '32px 24px' : 56, borderRight: isMobile ? 'none' : '1px solid rgba(255,255,255,0.06)', borderBottom: isMobile ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
           <Mono>FIG_16</Mono>
