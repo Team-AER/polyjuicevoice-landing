@@ -1,8 +1,13 @@
 services:
   web:
     build: .
+    image: polyjuicevoice-landing:latest
+    container_name: polyjuicevoice-landing
+    # Bound to loopback only — the host nginx reverse proxy
+    # (polyjuicevoice.aer.app) is the public edge. Port is configurable:
+    # 8080 for local dev, the CD pipeline deploys with HOST_PORT=8082.
     ports:
-      - "8080:80"
+      - "127.0.0.1:${HOST_PORT:-8080}:80"
     restart: unless-stopped
     volumes:
       - ./index.html:/usr/share/nginx/html/index.html:ro
