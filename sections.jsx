@@ -42,13 +42,9 @@ function TopNav({ accent }) {
     <header style={{ position: 'sticky', top: 0, zIndex: 50, backdropFilter: 'blur(12px)', background: 'rgba(8,8,10,0.72)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: isMobile ? '12px 20px' : '14px 32px', display: 'flex', alignItems: 'center', gap: isMobile ? 0 : 32 }}>
         <a href="#" style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#fff', textDecoration: 'none', flexShrink: 0 }}>
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-            <rect x="0.5" y="0.5" width="21" height="21" rx="4" stroke="#fff" />
-            {/* mirrored speech wave glyph */}
-            <path d="M5 11 L7 11 L7 8 L9 8 L9 14 L11 14 L11 5 L13 5 L13 17 L15 17 L15 9 L17 9" stroke={accent} strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <img src="assets/app-icon.png" alt="" width="22" height="22" style={{ borderRadius: 4 }} />
           <span style={{ fontFamily: 'Geist, ui-sans-serif, system-ui', fontWeight: 600, fontSize: 15, letterSpacing: '-0.01em' }}>PolyJuiceVoice</span>
-          {!isMobile && <Mono dim style={{ marginLeft: 6 }}>v0.3 · BETA</Mono>}
+          {!isMobile && <Mono dim style={{ marginLeft: 6 }}>TEAM AER</Mono>}
         </a>
 
         {!isMobile && (
@@ -68,9 +64,9 @@ function TopNav({ accent }) {
             <a href="https://github.com/Team-AER/PolyJuiceVoice" style={{ fontFamily: 'ui-monospace, monospace', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.7)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
               GITHUB <Arrow size={12} />
             </a>
-            <button style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 13, fontWeight: 500, color: '#000', background: '#fff', border: 'none', borderRadius: 4, padding: '8px 14px', cursor: 'pointer' }}>
-              Download for macOS
-            </button>
+            <a href="https://github.com/Team-AER/PolyJuiceVoice/releases" style={{ textDecoration: 'none', fontFamily: 'Geist, ui-sans-serif', fontSize: 13, fontWeight: 500, color: '#000', background: '#fff', border: 'none', borderRadius: 4, padding: '8px 14px', cursor: 'pointer' }}>
+              View releases
+            </a>
           </React.Fragment>
         )}
 
@@ -110,9 +106,9 @@ function TopNav({ accent }) {
             GITHUB <Arrow size={12} />
           </a>
           <div style={{ paddingTop: 8 }}>
-            <button style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 14, fontWeight: 500, color: '#000', background: '#fff', border: 'none', borderRadius: 4, padding: '10px 14px', cursor: 'pointer', width: '100%' }}>
-              Download for macOS
-            </button>
+            <a href="https://github.com/Team-AER/PolyJuiceVoice/releases" style={{ textDecoration: 'none', fontFamily: 'Geist, ui-sans-serif', fontSize: 14, fontWeight: 500, color: '#000', background: '#fff', border: 'none', borderRadius: 4, padding: '10px 14px', cursor: 'pointer', width: '100%' }}>
+              View releases
+            </a>
           </div>
         </nav>
       )}
@@ -140,13 +136,13 @@ function Hero({ accent }) {
           <p style={{ fontFamily: 'ui-monospace, "JetBrains Mono", monospace', fontSize: 13, lineHeight: 1.7, color: 'rgba(255,255,255,0.65)', margin: '36px 0 0', maxWidth: 360 }}>
             PolyJuiceVoice runs Qwen3-TTS natively on your Mac. Speak text in
             preset voices, design new ones from a description, or clone yours
-            from a few seconds of audio — all on Metal, none of it leaves the device.
+            from reference audio and its transcript — synthesized locally on Metal. Optional iCloud sync shares saved voices across your devices.
           </p>
           <div style={{ marginTop: isMobile ? 36 : 'auto', paddingTop: isMobile ? 0 : 56, display: 'flex', alignItems: 'center', gap: 28, flexWrap: 'wrap' }}>
-            <a href="#" style={{ color: '#fff', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'ui-monospace, monospace', fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,0.4)', paddingBottom: 4 }}>
-              Download · 96 MB <Arrow size={12} />
+            <a href="https://github.com/Team-AER/PolyJuiceVoice/releases" style={{ color: '#fff', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'ui-monospace, monospace', fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,0.4)', paddingBottom: 4 }}>
+              View releases <Arrow size={12} />
             </a>
-            <a href="#" style={{ color: 'rgba(255,255,255,0.55)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'ui-monospace, monospace', fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            <a href="https://github.com/Team-AER/PolyJuiceVoice/tree/main/docs" style={{ color: 'rgba(255,255,255,0.55)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'ui-monospace, monospace', fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
               Read the docs <Arrow size={12} />
             </a>
           </div>
@@ -205,13 +201,13 @@ function FeatureGrid({ accent }) {
               Native to<br />the metal.
             </h2>
             <p style={{ fontFamily: 'ui-monospace, monospace', fontSize: 12, lineHeight: 1.7, color: 'rgba(255,255,255,0.6)', margin: '28px 0 0', maxWidth: 320 }}>
-              Built in Swift, accelerated by MLX. Real-time speech on M-series silicon.
-              No Python, no Docker, no GPU required — and the iOS Simulator
+              Built in Swift, accelerated by MLX. Local speech on Apple silicon.
+              No Python, no Docker, no discrete GPU required — and the iOS Simulator
               is not invited (Metal hardware only).
             </p>
             <div style={{ marginTop: isMobile ? 28 : 56 }}>
-              <a href="#" style={{ color: '#fff', fontFamily: 'ui-monospace, monospace', fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.3)', paddingBottom: 4, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                Benchmarks <Arrow size={12} />
+              <a href="https://github.com/Team-AER/PolyJuiceVoice/blob/main/docs/BUILD_AND_RUN.md" style={{ color: '#fff', fontFamily: 'ui-monospace, monospace', fontSize: 12, letterSpacing: '0.08em', textTransform: 'uppercase', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.3)', paddingBottom: 4, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                Build guide <Arrow size={12} />
               </a>
             </div>
           </div>
@@ -331,7 +327,7 @@ function FeatureGrid({ accent }) {
             <p style={{ fontFamily: 'ui-monospace, monospace', fontSize: 12, lineHeight: 1.7, color: 'rgba(255,255,255,0.55)', margin: '14px 0 24px', maxWidth: 460 }}>
               Record a short reference (⌘R), type its transcript word-for-word,
               then write whatever you want said next. Same voice, new words —
-              everything stays on your Mac.
+              synthesis stays on your device.
             </p>
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: isMobile ? 160 : 'auto' }}>
               <IllusClone accent={accent} />
@@ -372,7 +368,7 @@ function FeatureGrid({ accent }) {
             </div>
             <h3 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 22, fontWeight: 500, letterSpacing: '-0.01em', margin: 0, color: '#fff' }}>Export & share</h3>
             <p style={{ fontFamily: 'ui-monospace, monospace', fontSize: 12, lineHeight: 1.7, color: 'rgba(255,255,255,0.55)', margin: '12px 0 0' }}>
-              Render anything to WAV, AAC, or ALAC. Drag straight into Logic,
+              Export 24 kHz mono WAV audio for Logic,
               Final Cut, or your podcast editor of choice.
             </p>
           </div>
@@ -382,7 +378,7 @@ function FeatureGrid({ accent }) {
         <div style={{ display: 'grid', gridTemplateColumns: col3, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           {[
             { fig: 'FIG_12', title: 'Sandboxed', body: 'App Sandbox enabled. Microphone access is granted explicitly for Clone and stays scoped to the app.' },
-            { fig: 'FIG_13', title: 'Pure Swift / MLX', body: 'On-device inference via mlx-swift. First launch downloads weights; everything after is fully offline.' },
+            { fig: 'FIG_13', title: 'Pure Swift / MLX', body: 'On-device inference via mlx-swift. Model Manager downloads selected Hugging Face snapshots; installed models synthesize locally. Optional iCloud sync uses the network.' },
             { fig: 'FIG_14', title: 'Debug log', body: 'Built-in log viewer for monitoring renders and downloads — no Console.app spelunking needed.' },
           ].map((it, i) => (
             <div key={it.fig} style={{ padding: P, borderRight: (!isMobile && i < 2) ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
@@ -438,7 +434,7 @@ function StudioDemo({ accent }) {
   const { isMobile } = useBreakpoint();
   const [tab, setTab] = React.useState('Speak');
   const [voice, setVoice] = React.useState(YOUR_VOICES[0]);
-  const [prompt, setPrompt] = React.useState("Hello World! PolyJuiceVoice is an on-device text-to-speech for macOS (and iOS) with voice cloning and voice design, powered by Apple's MLX and the Qwen3-TTS family of models. Everything runs locally over Metal — no audio, transcripts, or recordings ever leave the device.");
+  const [prompt, setPrompt] = React.useState("Hello World! PolyJuiceVoice is an on-device text-to-speech for macOS (and iOS) with voice cloning and voice design, powered by Apple's MLX and the Qwen3-TTS family of models. Synthesis runs locally over Metal. Optional iCloud sync transfers saved voice metadata, reference recordings and embeddings.");
   const [language, setLanguage] = React.useState('English');
   const [generating, setGenerating] = React.useState(false);
   const [genFrac, setGenFrac] = React.useState(1);
@@ -491,7 +487,7 @@ function StudioDemo({ accent }) {
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: isMobile ? '48px 20px' : '88px 32px' }}>
         <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'flex-end', marginBottom: isMobile ? 28 : 48, gap: isMobile ? 12 : 0 }}>
           <div>
-            <Mono>FIG_15 · POLYJUICEVOICE_APP</Mono>
+            <Mono>FIG_15 · STUDIO_MOCKUP</Mono>
             <h2 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: isMobile ? 36 : 56, lineHeight: 1, letterSpacing: '-0.03em', fontWeight: 500, margin: '20px 0 0', color: '#fff', maxWidth: 700 }}>
               Four modes,<br />
               one <span style={{ fontStyle: 'italic', fontFamily: 'Instrument Serif, Georgia, serif', fontWeight: 400 }}>quiet</span> window.
@@ -499,7 +495,7 @@ function StudioDemo({ accent }) {
           </div>
           {!isMobile && (
             <div style={{ textAlign: 'right' }}>
-              <Mono dim>FROM_THE_REAL_APP · v0.3</Mono>
+              <Mono dim>INTERACTIVE_MOCKUP</Mono>
             </div>
           )}
         </div>
@@ -726,8 +722,8 @@ function StudioDemo({ accent }) {
         <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: isMobile ? 20 : 24 }}>
           {[
             ['VOICE', voice.label + (isPreset ? ' · preset' : ' · cloned'), 'Cloned voices have their character baked in. Style instructions only apply to presets.'],
-            ['MODEL', 'Qwen3-TTS 1.7B · q4', 'Models load on first run; switch precision in Settings.'],
-            ['PRIVACY', 'On-device · Metal', 'No audio, transcripts, or recordings ever leave the device.'],
+            ['MODEL', 'Qwen3-TTS 1.7B · q4', 'Select and download a Hugging Face model snapshot in Model Manager.'],
+            ['PRIVACY', 'On-device · Metal', 'Local synthesis; optional iCloud sync transfers saved voice metadata, reference recordings and embeddings.'],
           ].map(([k, v, sub]) => (
             <div key={k}>
               <Mono dim>{k}</Mono>
@@ -775,7 +771,7 @@ function Specs({ accent }) {
             ['macOS', '26+ (primary)'],
             ['iOS', '26+ (device only)'],
             ['chip', 'Apple Silicon'],
-            ['xcode', '17+ to build'],
+            ['xcode', '26+ to build'],
             ['simulator', 'not supported'],
           ]} />
           <SpecBlock label="DELIVERS" accent={accent} isMobile={isMobile} rows={[
@@ -783,7 +779,7 @@ function Specs({ accent }) {
             ['precisions', 'q4 · q6 · q8 · bf16'],
             ['inference', 'mlx-swift on Metal'],
             ['modes', 'speak · design · clone · library'],
-            ['format', 'WAV · AAC · ALAC'],
+            ['format', '24 kHz mono WAV'],
           ]} />
         </div>
       </div>
@@ -819,13 +815,13 @@ function Cta({ accent }) {
         <h2 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: isMobile ? 52 : 96, lineHeight: isMobile ? 1.05 : 0.95, letterSpacing: '-0.04em', fontWeight: 500, margin: '32px 0 0', color: '#fff' }}>
           Speak in any<br />
           <span style={{ fontStyle: 'italic', fontFamily: 'Instrument Serif, Georgia, serif', fontWeight: 400 }}>voice</span> — without<br />
-          ever leaving your Mac.
+          a synthesis server.
         </h2>
         <div style={{ marginTop: isMobile ? 40 : 56, display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 16, width: isMobile ? '100%' : 'auto' }}>
-          <button style={{ background: '#fff', border: 'none', color: '#000', fontFamily: 'Geist, ui-sans-serif', fontSize: 15, fontWeight: 500, padding: '14px 28px', borderRadius: 4, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 10, width: isMobile ? '100%' : 'auto', justifyContent: 'center' }}>
-            ⌘ Download PolyJuiceVoice 0.3 · Apple Silicon
-          </button>
-          <Mono dim>96 MB · macOS 26+ · MIT-LICENSED</Mono>
+          <a href="https://github.com/Team-AER/PolyJuiceVoice/releases" style={{ textDecoration: 'none', background: '#fff', border: 'none', color: '#000', fontFamily: 'Geist, ui-sans-serif', fontSize: 15, fontWeight: 500, padding: '14px 28px', borderRadius: 4, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 10, width: isMobile ? '100%' : 'auto', justifyContent: 'center' }}>
+            ⌘ View PolyJuiceVoice releases
+          </a>
+          <Mono dim>macOS / iOS 26+ · APPLE SILICON · MIT-LICENSED</Mono>
         </div>
       </div>
     </section>
@@ -846,24 +842,24 @@ function Footer() {
           </div>
         </div>
         {[
-          ['Product', ['Speak', 'Design', 'Clone', 'Library']],
-          ['Docs', ['Quickstart', 'Build & run', 'CLAUDE.md', 'Models']],
-          ['Community', ['GitHub', 'Discord', 'Issues', 'Discussions']],
-          ['Legal', ['License (MIT)', 'Privacy', 'Terms', 'Acknowledgements']],
+          ['Product', [['Speak', '#speak'], ['Voices', '#voices'], ['Models', '#models']]],
+          ['Docs', [['Overview', 'https://github.com/Team-AER/PolyJuiceVoice'], ['Build & run', 'https://github.com/Team-AER/PolyJuiceVoice/blob/main/docs/BUILD_AND_RUN.md']]],
+          ['Community', [['GitHub', 'https://github.com/Team-AER/PolyJuiceVoice'], ['Issues', 'https://github.com/Team-AER/PolyJuiceVoice/issues'], ['Current site source', 'https://github.com/Team-AER/aer-landing/tree/main/polyjuicevoice']]],
+          ['Credits', [['License (MIT)', 'https://github.com/Team-AER/polyjuicevoice-landing/blob/main/LICENSE'], ['Privacy', 'https://github.com/Team-AER/PolyJuiceVoice/blob/main/docs/PRIVACY_POLICY.md'], ['Qwen3-TTS', 'https://github.com/QwenLM/Qwen3-TTS'], ['MLX Swift', 'https://github.com/ml-explore/mlx-swift']]],
         ].map(([h, items]) => (
           <div key={h}>
             <Mono dim>{h}</Mono>
             <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {items.map((it) => (
-                <a key={it} href="#" style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>{it}</a>
+              {items.map(([it, href]) => (
+                <a key={it} href={href} style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 13, color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>{it}</a>
               ))}
             </div>
           </div>
         ))}
       </div>
       <div style={{ maxWidth: 1280, margin: '48px auto 0', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 16, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, fontFamily: 'ui-monospace, monospace', fontSize: 11, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.08em' }}>
-        <div>© 2026 TEAM AER · ALL ON-DEVICE, ALL THE TIME</div>
-        <div>v0.3 · QWEN3-TTS · MLX-SWIFT</div>
+        <div>© 2026 TEAM AER · LOCAL SYNTHESIS · OPTIONAL ICLOUD SYNC</div>
+        <div>QWEN3-TTS · MLX-SWIFT</div>
       </div>
     </footer>
   );
