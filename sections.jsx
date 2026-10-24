@@ -465,7 +465,7 @@ const YOUR_VOICES = [
 
 function StudioDemo({ accent }) {
   const reduced = usePreviewReducedMotion();
-  const [notice, setNotice] = React.useState('Ready to preview. This page creates no audio; other modes and export are available in the Mac app.');
+  const [notice, setNotice] = React.useState('Ready to preview.');
   const { isMobile } = useBreakpoint();
   const tab = 'Speak';
   const [voice, setVoice] = React.useState(YOUR_VOICES[0]);
@@ -476,14 +476,14 @@ function StudioDemo({ accent }) {
   const [playing, setPlaying] = React.useState(false);
   const [playhead, setPlayhead] = React.useState(0);
 
-  React.useEffect(() => { if (reduced) { setPlaying(false); if (generating) { setGenFrac(1); setGenerating(false); setNotice('Preview complete · no audio created. Export is available in the Mac app.'); } } }, [reduced, generating]);
+  React.useEffect(() => { if (reduced) { setPlaying(false); if (generating) { setGenFrac(1); setGenerating(false); setNotice('Preview complete · no audio created.'); } } }, [reduced, generating]);
 
   // User-requested illustrative progress; this is not a synthesis benchmark.
   React.useEffect(() => {
     if (!generating) return;
     const id = setInterval(() => {
       setGenFrac((f) => {
-        if (f >= 1) { setGenerating(false); setNotice('Preview complete · no audio created. Export is available in the Mac app.'); return 1; }
+        if (f >= 1) { setGenerating(false); setNotice('Preview complete · no audio created.'); return 1; }
         return Math.min(1, f + 0.02);
       });
     }, 80);
@@ -524,7 +524,7 @@ function StudioDemo({ accent }) {
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: isMobile ? '48px 20px' : '88px 32px' }}>
         <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'flex-end', marginBottom: isMobile ? 28 : 48, gap: isMobile ? 12 : 0 }}>
           <div>
-            <div className="preview-badge">Interactive preview · no audio generated</div><br /><Mono>FIG_15 · STUDIO_MOCKUP</Mono>
+            <div className="preview-badge">Interactive preview · no audio</div><br /><Mono>FIG_15 · STUDIO_MOCKUP</Mono>
             <h2 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: isMobile ? 36 : 56, lineHeight: 1, letterSpacing: '-0.03em', fontWeight: 500, margin: '20px 0 0', color: '#fff', maxWidth: 700 }}>
               Four modes,<br />
               one <span style={{ fontStyle: 'italic', fontFamily: 'Instrument Serif, Georgia, serif', fontWeight: 400 }}>quiet</span> window.
@@ -532,7 +532,7 @@ function StudioDemo({ accent }) {
           </div>
           {!isMobile && (
             <div style={{ textAlign: 'right' }}>
-              <p className="preview-note">Explore the Speak screen.<br />Other modes and audio export are available in the Mac app.</p>
+              <p className="preview-note">Pick a voice and edit the text.<br />Audio and export need the Mac app.</p>
             </div>
           )}
         </div>
@@ -741,7 +741,7 @@ function StudioDemo({ accent }) {
               {/* Bottom Speak CTA */}
               <div style={{ position: 'absolute', left: isMobile ? 12 : 24, right: isMobile ? 12 : 24, bottom: 24 }}>
                 <button
-                  disabled={generating} aria-describedby="p-preview-status" onClick={() => { setGenFrac(reduced ? 1 : 0); setGenerating(!reduced); setPlaying(false); setPlayhead(0); setNotice(reduced ? 'Preview complete · no audio created. Export is available in the Mac app.' : 'Previewing speech with illustrative timing. No audio is generated.'); }}
+                  disabled={generating} aria-describedby="p-preview-status" onClick={() => { setGenFrac(reduced ? 1 : 0); setGenerating(!reduced); setPlaying(false); setPlayhead(0); setNotice(reduced ? 'Preview complete · no audio created.' : 'Previewing speech · illustrative timing.'); }}
                   style={{
                     width: '100%', background: accent, color: '#fff', border: 'none',
                     borderRadius: 10, padding: '14px 0',
