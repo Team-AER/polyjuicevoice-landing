@@ -1,3 +1,33 @@
+// Local website previews never run inference or create audio files.
+function usePreviewReducedMotion() {
+  const query = '(prefers-reduced-motion: reduce)';
+  const [reduced, setReduced] = React.useState(() => window.matchMedia(query).matches);
+  React.useEffect(() => {
+    const media = window.matchMedia(query);
+    const update = () => setReduced(media.matches);
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
+  return reduced;
+}
+function useBackgroundMotionPaused() {
+  const [paused, setPaused] = React.useState(() => document.documentElement.hasAttribute('data-background-motion-paused'));
+  React.useEffect(() => {
+    const update = () => setPaused(document.documentElement.hasAttribute('data-background-motion-paused'));
+    window.addEventListener('aer:background-motion', update);
+    return () => window.removeEventListener('aer:background-motion', update);
+  }, []);
+  return paused;
+}
+function BackgroundMotionControl() {
+  const reduced = usePreviewReducedMotion();
+  const paused = useBackgroundMotionPaused();
+  return <div className="preview-motion-control"><button type="button" disabled={reduced} aria-pressed={paused || reduced} onClick={() => {
+    document.documentElement.toggleAttribute('data-background-motion-paused', !paused);
+    window.dispatchEvent(new Event('aer:background-motion'));
+  }}>{reduced ? 'Background motion reduced by device' : paused ? 'Resume background motion' : 'Pause background motion'}</button></div>;
+}
+
 // PolyJuiceVoice landing page sections — voice/TTS-themed, mirrors the real app
 
 // =================== Helpers ===================
@@ -169,8 +199,10 @@ function Hero({ accent }) {
 function Marquee() {
   const items = ['QWEN3-TTS', 'METAL ACCELERATED', '100% ON-DEVICE', 'OPEN SOURCE', 'VOICE CLONING', 'VOICE DESIGN', 'macOS · iOS', 'Q4 → bf16', 'STYLE INSTRUCTIONS', 'PRESET VOICES'];
   return (
+    <>
+    <BackgroundMotionControl />
     <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', overflow: 'hidden', padding: '20px 0' }}>
-      <div style={{ display: 'flex', gap: 48, animation: 'cantis-marquee 40s linear infinite', whiteSpace: 'nowrap' }}>
+      <div data-background-track style={{ display: 'flex', gap: 48, animation: 'cantis-marquee 40s linear infinite', whiteSpace: 'nowrap' }}>
         {[...items, ...items, ...items].map((it, i) => (
           <span key={i} style={{ fontFamily: 'ui-monospace, monospace', fontSize: 11, letterSpacing: '0.18em', color: 'rgba(255,255,255,0.4)' }}>
             {it} <span style={{ marginLeft: 48, color: 'rgba(255,255,255,0.15)' }}>◆</span>
@@ -178,6 +210,7 @@ function Marquee() {
         ))}
       </div>
     </div>
+    </>
   );
 }
 
@@ -431,22 +464,26 @@ const YOUR_VOICES = [
 ];
 
 function StudioDemo({ accent }) {
+  const reduced = usePreviewReducedMotion();
+  const [notice, setNotice] = React.useState('Ready to preview. This page creates no audio; other modes and export are available in the Mac app.');
   const { isMobile } = useBreakpoint();
-  const [tab, setTab] = React.useState('Speak');
+  const tab = 'Speak';
   const [voice, setVoice] = React.useState(YOUR_VOICES[0]);
   const [prompt, setPrompt] = React.useState("Hello World! PolyJuiceVoice is an on-device text-to-speech for macOS (and iOS) with voice cloning and voice design, powered by Apple's MLX and the Qwen3-TTS family of models. Synthesis runs locally over Metal. Optional iCloud sync transfers saved voice metadata, reference recordings and embeddings.");
   const [language, setLanguage] = React.useState('English');
   const [generating, setGenerating] = React.useState(false);
-  const [genFrac, setGenFrac] = React.useState(1);
-  const [playing, setPlaying] = React.useState(true);
+  const [genFrac, setGenFrac] = React.useState(0);
+  const [playing, setPlaying] = React.useState(false);
   const [playhead, setPlayhead] = React.useState(0);
 
-  // generation tick
+  React.useEffect(() => { if (reduced) { setPlaying(false); if (generating) { setGenFrac(1); setGenerating(false); setNotice('Preview complete · no audio created. Export is available in the Mac app.'); } } }, [reduced, generating]);
+
+  // User-requested illustrative progress; this is not a synthesis benchmark.
   React.useEffect(() => {
     if (!generating) return;
     const id = setInterval(() => {
       setGenFrac((f) => {
-        if (f >= 1) { setGenerating(false); return 1; }
+        if (f >= 1) { setGenerating(false); setNotice('Preview complete · no audio created. Export is available in the Mac app.'); return 1; }
         return Math.min(1, f + 0.02);
       });
     }, 80);
@@ -455,19 +492,19 @@ function StudioDemo({ accent }) {
 
   // playhead — 14s clip
   React.useEffect(() => {
-    if (!playing) return;
+    if (!playing || reduced) return;
     let raf;
     const dur = 14000;
     const start = performance.now() - playhead * dur;
     const tick = () => {
       let t = ((performance.now() - start) / dur);
-      if (t >= 1) { t = 0; }
+      if (t >= 1) { setPlayhead(1); setPlaying(false); return; }
       setPlayhead(t);
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [playing]);
+  }, [playing, reduced]);
 
   // waveform bars — speech-shaped (sentence envelope)
   const bars = React.useMemo(() => {
@@ -487,7 +524,7 @@ function StudioDemo({ accent }) {
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: isMobile ? '48px 20px' : '88px 32px' }}>
         <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'flex-end', marginBottom: isMobile ? 28 : 48, gap: isMobile ? 12 : 0 }}>
           <div>
-            <Mono>FIG_15 · STUDIO_MOCKUP</Mono>
+            <div className="preview-badge">Interactive preview · no audio generated</div><br /><Mono>FIG_15 · STUDIO_MOCKUP</Mono>
             <h2 style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: isMobile ? 36 : 56, lineHeight: 1, letterSpacing: '-0.03em', fontWeight: 500, margin: '20px 0 0', color: '#fff', maxWidth: 700 }}>
               Four modes,<br />
               one <span style={{ fontStyle: 'italic', fontFamily: 'Instrument Serif, Georgia, serif', fontWeight: 400 }}>quiet</span> window.
@@ -495,7 +532,7 @@ function StudioDemo({ accent }) {
           </div>
           {!isMobile && (
             <div style={{ textAlign: 'right' }}>
-              <Mono dim>INTERACTIVE_MOCKUP</Mono>
+              <p className="preview-note">Explore the Speak screen.<br />Other modes and audio export are available in the Mac app.</p>
             </div>
           )}
         </div>
@@ -514,10 +551,10 @@ function StudioDemo({ accent }) {
             </div>
             <div style={{ flex: 1 }} />
             <div style={{ display: 'flex', gap: 6 }}>
-              <button style={{ width: 28, height: 24, borderRadius: 6, background: 'rgba(255,255,255,0.06)', border: 'none', color: 'rgba(255,255,255,0.55)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Debug">
+              <button disabled data-native-only style={{ width: 28, height: 24, borderRadius: 6, background: 'rgba(255,255,255,0.06)', border: 'none', color: 'rgba(255,255,255,0.55)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Debug">
                 <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7.5" r="3" stroke="currentColor" strokeWidth="1.2" /><line x1="7" y1="2" x2="7" y2="4.5" stroke="currentColor" strokeWidth="1.2" /><line x1="3.5" y1="3.5" x2="5" y2="5" stroke="currentColor" strokeWidth="1.2" /><line x1="10.5" y1="3.5" x2="9" y2="5" stroke="currentColor" strokeWidth="1.2" /><line x1="2" y1="7.5" x2="4" y2="7.5" stroke="currentColor" strokeWidth="1.2" /><line x1="10" y1="7.5" x2="12" y2="7.5" stroke="currentColor" strokeWidth="1.2" /></svg>
               </button>
-              <button style={{ width: 28, height: 24, borderRadius: 6, background: 'rgba(255,255,255,0.06)', border: 'none', color: 'rgba(255,255,255,0.55)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Appearance">
+              <button disabled data-native-only style={{ width: 28, height: 24, borderRadius: 6, background: 'rgba(255,255,255,0.06)', border: 'none', color: 'rgba(255,255,255,0.55)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Appearance">
                 <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="4" stroke="currentColor" strokeWidth="1.2" /><path d="M7 3 A4 4 0 0 1 7 11 Z" fill="currentColor" /></svg>
               </button>
             </div>
@@ -539,7 +576,7 @@ function StudioDemo({ accent }) {
                   return (
                     <button
                       key={it.name}
-                      onClick={() => setTab(it.name)}
+                      disabled={it.name !== 'Speak'} data-native-only={it.name !== 'Speak' || undefined} title={it.name !== 'Speak' ? 'Available in the Mac app' : undefined} aria-pressed={active}
                       style={{
                         width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10,
                         padding: '8px 10px', marginBottom: 2, borderRadius: 6,
@@ -616,7 +653,7 @@ function StudioDemo({ accent }) {
                       </button>
                     );
                   })}
-                  <button
+                  <button disabled data-native-only
                     style={{
                       background: 'transparent', border: '1px dashed rgba(255,255,255,0.15)',
                       color: 'rgba(255,255,255,0.5)', padding: '5px 14px', borderRadius: 999,
@@ -630,6 +667,7 @@ function StudioDemo({ accent }) {
                 {/* Text to speak */}
                 <div style={{ fontFamily: 'Geist, ui-sans-serif', fontSize: 12, color: 'rgba(255,255,255,0.55)', marginBottom: 8 }}>Text to speak</div>
                 <textarea
+                  aria-label="Text to speak"
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   rows="4"
@@ -675,11 +713,11 @@ function StudioDemo({ accent }) {
                   </div>
                   {/* Transport */}
                   <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 16 }}>
-                    <button style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.55)', cursor: 'pointer', padding: 4, display: 'flex' }} title="Skip back 10s">
+                    <button disabled data-native-only style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.55)', cursor: 'pointer', padding: 4, display: 'flex' }} title="Skip back 10s">
                       <svg width="20" height="20" viewBox="0 0 22 22" fill="none"><path d="M11 4 A7 7 0 1 1 4 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /><path d="M4 4 L4 8 L8 8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /><text x="11" y="14" textAnchor="middle" fontFamily="ui-monospace, monospace" fontSize="7" fill="currentColor">10</text></svg>
                     </button>
                     <button
-                      onClick={() => setPlaying((p) => !p)}
+                      disabled={genFrac < 1} aria-label={playing ? 'Pause preview animation' : 'Play preview animation'} onClick={() => { if (reduced) setPlayhead(1); else { if (playhead >= 1) setPlayhead(0); setPlaying((p) => !p); } }}
                       style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', padding: 4, display: 'flex' }}
                     >
                       {playing ? (
@@ -688,13 +726,13 @@ function StudioDemo({ accent }) {
                         <svg width="20" height="20" viewBox="0 0 22 22"><path d="M6 4 L17 11 L6 18 Z" fill="currentColor" /></svg>
                       )}
                     </button>
-                    <button style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.55)', cursor: 'pointer', padding: 4, display: 'flex' }} title="Skip forward 10s">
+                    <button disabled data-native-only style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.55)', cursor: 'pointer', padding: 4, display: 'flex' }} title="Skip forward 10s">
                       <svg width="20" height="20" viewBox="0 0 22 22" fill="none"><path d="M11 4 A7 7 0 1 0 18 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /><path d="M18 4 L18 8 L14 8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /><text x="11" y="14" textAnchor="middle" fontFamily="ui-monospace, monospace" fontSize="7" fill="currentColor">10</text></svg>
                     </button>
                     <div style={{ flex: 1 }} />
-                    <button style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', padding: 4, fontFamily: 'Geist, ui-sans-serif', fontSize: 13 }}>
+                    <button disabled data-native-only style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', padding: 4, fontFamily: 'Geist, ui-sans-serif', fontSize: 13 }}>
                       <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2 L8 10 M5 7 L8 10 L11 7 M3 13 L13 13" stroke="currentColor" strokeWidth="1.4" /></svg>
-                      Export
+                      Export in app
                     </button>
                   </div>
                 </div>
@@ -703,7 +741,7 @@ function StudioDemo({ accent }) {
               {/* Bottom Speak CTA */}
               <div style={{ position: 'absolute', left: isMobile ? 12 : 24, right: isMobile ? 12 : 24, bottom: 24 }}>
                 <button
-                  onClick={() => { setGenFrac(1); setPlaying(true); setPlayhead(0); }}
+                  disabled={generating} aria-describedby="p-preview-status" onClick={() => { setGenFrac(reduced ? 1 : 0); setGenerating(!reduced); setPlaying(false); setPlayhead(0); setNotice(reduced ? 'Preview complete · no audio created. Export is available in the Mac app.' : 'Previewing speech with illustrative timing. No audio is generated.'); }}
                   style={{
                     width: '100%', background: accent, color: '#fff', border: 'none',
                     borderRadius: 10, padding: '14px 0',
@@ -711,12 +749,14 @@ function StudioDemo({ accent }) {
                     cursor: 'pointer', boxShadow: `0 12px 28px ${accent}33`,
                   }}
                 >
-                  Speak
+                  {generating ? 'Previewing…' : 'Preview speech workflow'}
                 </button>
               </div>
             </div>
           </div>
         </div>
+
+        <p className="preview-status" id="p-preview-status" role="status">{notice}</p>
 
         {/* Caption row */}
         <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: isMobile ? 20 : 24 }}>
