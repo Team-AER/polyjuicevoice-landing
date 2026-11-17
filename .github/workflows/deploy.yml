@@ -43,6 +43,8 @@ jobs:
           rsync -az --delete \
             --exclude='.git' \
             --exclude='.github' \
+            --exclude='.env' \
+            --exclude='.env.*' \
             -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
             ./ "$SSH_USER@$SSH_HOST:/home/ubuntu/polyjuicevoice-landing/"
 
@@ -52,4 +54,4 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
         run: |
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no "$SSH_USER@$SSH_HOST" \
-            'cd /home/ubuntu/polyjuicevoice-landing && HOST_PORT=8082 docker compose up -d --build && docker image prune -f'
+            'cd /home/ubuntu/polyjuicevoice-landing && HOST_PORT=8082 docker compose up -d --build'

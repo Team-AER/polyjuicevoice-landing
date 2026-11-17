@@ -1,0 +1,1 @@
+window.AER_MONITORING = {dsn: "${GLITCHTIP_DSN}", tunnel: "${GLITCHTIP_TUNNEL}", environment: "${SENTRY_ENVIRONMENT}", release: "${SENTRY_RELEASE}"};
