@@ -1,6 +1,11 @@
 services:
   web:
     build: .
+    environment:
+      GLITCHTIP_DSN: ${GLITCHTIP_DSN:-}
+      GLITCHTIP_TUNNEL: ${GLITCHTIP_TUNNEL:-}
+      SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-production}
+      SENTRY_RELEASE: ${SENTRY_RELEASE:-}
     image: polyjuicevoice-landing:latest
     container_name: polyjuicevoice-landing
     # Bound to loopback only — the host nginx reverse proxy
